@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { app } from "./firebaseConfig";
-import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword  } from "firebase/auth";
+import { getAuth, GoogleAuthProvider ,signInWithPopup  } from "firebase/auth";
+
 
 function App() {
   let auth = getAuth(app);
+  const googleProvider = new GoogleAuthProvider();
   const [data, setData] = useState({});
   const handleChange = (event) => {
     const newInput = { [event.target.name]: event.target.value };
     setData({ ...data, ...newInput });
   };
   const handleSubmit = () => {
-    createUserWithEmailAndPassword(auth, data.email, data.password)
+    signInWithPopup(auth,googleProvider)
       .then((response) => {
         console.log(response.user);
         alert("New User Added")
@@ -18,18 +20,7 @@ function App() {
       .catch((err) => {
         alert(err.message);
       });
-    
   };
-  const handleLogin=()=>{
-    signInWithEmailAndPassword(auth, data.email, data.password)
-      .then((response) => {
-        console.log(response.user);
-        alert("Login Successful")
-      })
-      .catch((err) => {
-        alert(err.message);
-      });
-  }
   return (
     <div className="App">
       <label htmlFor="email">Email</label>
@@ -43,8 +34,7 @@ function App() {
         onChange={handleChange}
       />
       <br />
-      <button onClick={handleSubmit}>Submit</button>
-      <button onClick={handleLogin}>Login</button>
+      <button onClick={handleSubmit}>Continue with google</button>
     </div>
   );
 }
