@@ -1,23 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { app } from "./firebaseConfig";
+import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword  } from "firebase/auth";
 
 function App() {
+  let auth = getAuth(app);
+  const [data, setData] = useState({});
+  const handleChange = (event) => {
+    const newInput = { [event.target.name]: event.target.value };
+    setData({ ...data, ...newInput });
+  };
+  const handleSubmit = () => {
+    createUserWithEmailAndPassword(auth, data.email, data.password)
+      .then((response) => {
+        console.log(response.user);
+        alert("New User Added")
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
+    
+  };
+  const handleLogin=()=>{
+    signInWithEmailAndPassword(auth, data.email, data.password)
+      .then((response) => {
+        console.log(response.user);
+        alert("Login Successful")
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <label htmlFor="email">Email</label>
+      <input type="email" id="email" name="email" onChange={handleChange} />
+      <br />
+      <label htmlFor="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        onChange={handleChange}
+      />
+      <br />
+      <button onClick={handleSubmit}>Submit</button>
+      <button onClick={handleLogin}>Login</button>
     </div>
   );
 }
