@@ -1,29 +1,28 @@
 import { useState } from "react";
 import { app, database } from "./firebaseConfig";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, doc, updateDoc } from "firebase/firestore";
 
 function App() {
-  // const [data, setData] = useState({});
-  const collectionRef = collection(database, "user");
+  const [data, setData] = useState({});
+  // const collectionRef = collection(database, "user");
   // const handleChange = (event) => {
   //   const newInput = { [event.target.name]: event.target.value };
   //   setData({ ...data, ...newInput });
   // };
-  const getData = () => {
-    getDocs(collectionRef)
-      .then((response) => {
-        console.log(
-          response.docs.map((item) => {
-            return item.data();
-          })
-        );
-      })
-      .catch((err) => {
-        alert(err.message);
-      });
-  };
+  
+  const updateData =() =>{
+     const docToUpdate = doc(database,"user","a9OR8Kqugv7RqtQmNV6A")
+     updateDoc(docToUpdate,{
+      // one or more than one field can be updated.
+      email: "shivavns00@gmail.com"
+     }).then(()=>{
+      alert("Updated Successfully")
+     }).catch(err=>{
+      alert(err.message)
+     })
+  }
   const handleSubmit = () => {
-    getData();
+    updateData()
   };
   return (
     <div className="App">
@@ -50,7 +49,7 @@ function App() {
       ></textarea>
       <br /> */}
 
-      <button onClick={handleSubmit}>Get Data</button>
+      <button onClick={handleSubmit}>Update Data</button>
     </div>
   );
 }
