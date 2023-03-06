@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { app, database } from "./firebaseConfig";
-import { collection, doc, updateDoc } from "firebase/firestore";
+import { collection, doc, updateDoc, deleteDoc } from "firebase/firestore";
 
 function App() {
   const [data, setData] = useState({});
@@ -21,8 +21,16 @@ function App() {
       alert(err.message)
      })
   }
+  const deleteData =()=>{
+    const docToDelete= doc(database,"user","a9OR8Kqugv7RqtQmNV6A")
+    deleteDoc(docToDelete).then(()=>{
+      alert("Deleted Successfully")
+    }).catch(err=>{
+      alert(err.message)
+    })
+  }
   const handleSubmit = () => {
-    updateData()
+    deleteData()
   };
   return (
     <div className="App">
@@ -49,7 +57,7 @@ function App() {
       ></textarea>
       <br /> */}
 
-      <button onClick={handleSubmit}>Update Data</button>
+      <button onClick={handleSubmit}>Delete Data</button>
     </div>
   );
 }
