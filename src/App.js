@@ -1,25 +1,27 @@
 import { useState } from "react";
-import { app } from "./firebaseConfig";
-import { getAuth, GoogleAuthProvider ,signInWithPopup  } from "firebase/auth";
+import { app, database } from "./firebaseConfig";
+import { collection, addDoc } from "firebase/firestore";
 
+// Make sure to enable Cloud firestore on firebase to store data
 
 function App() {
-  let auth = getAuth(app);
-  const googleProvider = new GoogleAuthProvider();
   const [data, setData] = useState({});
+  const collectionRef = collection(database, "user");
   const handleChange = (event) => {
     const newInput = { [event.target.name]: event.target.value };
     setData({ ...data, ...newInput });
   };
   const handleSubmit = () => {
-    signInWithPopup(auth,googleProvider)
-      .then((response) => {
-        console.log(response.user);
-        alert("New User Added")
-      })
-      .catch((err) => {
-        alert(err.message);
-      });
+    addDoc(collectionRef, {
+      email: data.email,
+      password: data.password,
+      comment: data.comment
+    }).then(()=>{
+      alert("Data added successfully")
+    }).catch(err=>{
+      alert(err.message)
+    })
+    console.log("Clicked")
   };
   return (
     <div className="App">
@@ -34,7 +36,18 @@ function App() {
         onChange={handleChange}
       />
       <br />
-      <button onClick={handleSubmit}>Continue with google</button>
+      <label htmlFor="comment" >Comment</label>
+      <br />
+      <textarea
+        name="comment"
+        id="comment"
+        cols="30"
+        rows="5"
+        onChange={handleChange}
+      ></textarea>
+
+      <br />
+      <button onClick={handleSubmit}>Add Data</button>
     </div>
   );
 }
