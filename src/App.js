@@ -1,7 +1,7 @@
 
 import { useEffect,useState } from "react";
 import { app, database } from "./firebaseConfig";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, onSnapshot } from "firebase/firestore";
 
 function App() {
   const [data, setData] = useState({});
@@ -21,10 +21,17 @@ function App() {
    })
   };
   const getData =()=>{
-    getDocs(collectionRef).then((data)=>{
-      console.log(data.docs.map((item)=>{
-        return item.data()
-      }))
+    // getDocs(collectionRef).then((data)=>{
+    //   console.log(data.docs.map((item)=>{
+    //     return item.data()
+    //   }))
+    // })
+    onSnapshot(collectionRef,(data)=>{
+      console.log(
+        data.docs.map((item)=>{
+          return item.data()
+        })
+      )
     })
   }
   useEffect(()=>{
