@@ -1,37 +1,44 @@
-import { useState } from "react";
-import { app, storage } from "./firebaseConfig";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+
+import { useEffect,useState } from "react";
+import { app, database } from "./firebaseConfig";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 
 function App() {
   const [data, setData] = useState({});
-  console.log(data)
+  const handleInput = (event)=>{
+    let newInput = {[event.target.name]: event.target.value }
+    setData({...data,...newInput })
+  }
+  const collectionRef = collection(database,"users")
   const handleSubmit = () => {
-    const storageRef = ref(storage, `images/${data.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, data);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload is " + progress + "% done");
-        
-      },
-      (error) => {
-        console.log(error.message);
-      },
-      () => {
-        alert("File uploaded")
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          console.log("File available at ", downloadURL);
-        });
-      }
-    );
+    addDoc(collectionRef,{
+      name: data.name,
+      email: data.email
+   }).then(()=>{
+    alert("Data Added")
+   }).catch((err)=>{
+    alert(err.message)
+   })
   };
+  const getData =()=>{
+    getDocs(collectionRef).then((data)=>{
+      console.log(data.docs.map((item)=>{
+        return item.data()
+      }))
+    })
+  }
+  useEffect(()=>{
+    getData()
+  },[])
   return (
     <div className="App">
-      <input type="file" onChange={(event) => setData(event.target.files[0])} />
-      <br />
-
+      <div>
+      <input type="text" name="name" id="name" placeholder="Name" onChange={handleInput} />
+      <input type="text" name="email" id="email" placeholder="Email" onChange={handleInput} />
+      </div>
+      <div>
       <button onClick={handleSubmit}>Submit</button>
+      </div>
     </div>
   );
 }
