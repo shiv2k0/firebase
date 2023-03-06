@@ -1,31 +1,34 @@
 import { useState } from "react";
 import { app, database } from "./firebaseConfig";
-import { collection, addDoc } from "firebase/firestore";
-
-// Make sure to enable Cloud firestore on firebase to store data
+import { collection, addDoc, getDocs } from "firebase/firestore";
 
 function App() {
-  const [data, setData] = useState({});
+  // const [data, setData] = useState({});
   const collectionRef = collection(database, "user");
-  const handleChange = (event) => {
-    const newInput = { [event.target.name]: event.target.value };
-    setData({ ...data, ...newInput });
+  // const handleChange = (event) => {
+  //   const newInput = { [event.target.name]: event.target.value };
+  //   setData({ ...data, ...newInput });
+  // };
+  const getData = () => {
+    getDocs(collectionRef)
+      .then((response) => {
+        console.log(
+          response.docs.map((item) => {
+            return item.data();
+          })
+        );
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
   };
   const handleSubmit = () => {
-    addDoc(collectionRef, {
-      email: data.email,
-      password: data.password,
-      comment: data.comment
-    }).then(()=>{
-      alert("Data added successfully")
-    }).catch(err=>{
-      alert(err.message)
-    })
-    console.log("Clicked")
+    getData();
   };
   return (
     <div className="App">
-      <label htmlFor="email">Email</label>
+
+      {/* <label htmlFor="email">Email</label>
       <input type="email" id="email" name="email" onChange={handleChange} />
       <br />
       <label htmlFor="password">Password</label>
@@ -36,7 +39,7 @@ function App() {
         onChange={handleChange}
       />
       <br />
-      <label htmlFor="comment" >Comment</label>
+      <label htmlFor="comment">Comment</label>
       <br />
       <textarea
         name="comment"
@@ -45,9 +48,9 @@ function App() {
         rows="5"
         onChange={handleChange}
       ></textarea>
+      <br /> */}
 
-      <br />
-      <button onClick={handleSubmit}>Add Data</button>
+      <button onClick={handleSubmit}>Get Data</button>
     </div>
   );
 }
